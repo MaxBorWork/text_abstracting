@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"sort"
 )
 
 func Index(c *gin.Context) {
@@ -13,14 +14,24 @@ func ClassicAbstractionHandler(c *gin.Context) {
 	id := c.Param("title")
 	document := docsMap[id]
 
-	calcDocWeights(document)
+	document.WordWeightsStruct = calcDocWeights(document)
+	document.Sentences = calcSentsWeight(document)
+	sort.Slice(document.Sentences, func(i, j int) bool {
+		return document.Sentences[i].Weight > document.Sentences[j].Weight
+	})
 	docsMap[id] = document
 
+	resultSentences := document.Sentences[:10]
+	var text string
+	for _, str := range resultSentences {
+		text += str.Sentence.Text + " "
+	}
 
-	c.HTML(http.StatusOK, "result_ngrams.html", gin.H {
+	c.HTML(http.StatusOK, "result_classic.html", gin.H {
 		"Id": id,
 		"Title" : document.Title,
 		"Link": document.Link,
+		"Text" : text,
 	})
 }
 

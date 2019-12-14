@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Result page</title>
+    <style>
+        .result {
+            margin-top: 60px;
+            margin-left: 33.333333%;
+            text-align: center;
+            width: 33.333333%;
+        }
+
+        .result p, .links p {
+            font-size: 18px;
+        }
+
+        .result p a, .links p a {
+            color: black;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .result p a:hover, .links p a:hover {
+            color: black;
+        }
+
+        .result table {
+            border: 2px solid black;
+            margin-left: 15%;
+            width: 70%;
+        }
+
+        .result table thead {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .result table tr td {
+            border: 1px solid black;
+        }
+
+        .header {
+            margin-left: 33.33333%;
+            width: 33.33333%;
+            text-align: center;
+        }
+
+        .header ul {
+            display: -webkit-box;
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .header ul li {
+            margin: 20px 40px;
+        }
+
+        .header ul li a {
+            text-decoration: none;
+            color: black;
+            font-size: 24px;
+        }
+
+        .header ul li a:hover {
+            text-decoration: none;
+            color: black;
+        }
+
+        .results-table {
+            margin: 60px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <ul>
+            <li class="active"><a href="#" target="_blank">Result</a></li>
+            <li><a href="/file/{{ .Id }}" target="_blank">File</a></li>
+            <li><a href="{{ .Link }}" target="_blank">Wiki</a></li>
+{{/*            <li><a href="/save" class="save-bnt">Save</a></li>*/}}
+        </ul>
+    </div>
+    <div class="result">
+        <p>Классический реферат для документа <a href="{{ .Link }}" target="_blank">{{ .Title }}</a> </p>
+
+        <p>{{ .Text }}</p>
+
+    </div>
+</body>
+</html>

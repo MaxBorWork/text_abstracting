@@ -5,6 +5,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"gopkg.in/jdkato/prose.v2"
 	"mediawiki"
+	"regexp"
+	"strings"
 )
 
 const (
@@ -12,85 +14,32 @@ const (
 )
 
 var docsMap map[string]Document
+var stopWords []string
+var docsLen float64
 
 func init() {
-
 	docsMap = make(map[string]Document)
 
-	docsMap["chess_fr"] =  Document{
-		Title:     "Échecs",
-		Language:  "fr",
-		Link:      "https://fr.wikipedia.org/wiki/%C3%89checs",
+	docsMap["osi"] =  Document{
+		Title:     "Сетевая_модель_OSI",
+		Language:  "ru",
+		Link:      "https://ru.wikipedia.org/wiki/%D0%A1%D0%B5%D1%82%D0%B5%D0%B2%D0%B0%D1%8F_%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D1%8C_OSI",
 		ShortText: "",
 	}
 
-	docsMap["saint_martin_fr"] = Document{
-		Title:     "Saint-Martin-sur-Écaillon",
-		Language:  "fr",
-		Link:      "https://fr.wikipedia.org/wiki/Saint-Martin-sur-%C3%89caillon",
+	docsMap["http"] = Document{
+		Title:     "HTTP",
+		Language:  "ru",
+		Link:      "https://ru.wikipedia.org/wiki/HTTP",
 		ShortText: "",
 	}
 
-	docsMap["chretien_fr"] = Document{
-		Title:     "Albert_Chrétien",
-		Language:  "fr",
-		Link:      "https://fr.wikipedia.org/wiki/Albert_Chr%C3%A9tien",
-		ShortText: "",
-	}
-
-	docsMap["santos_fr"] = Document{
-		Title:     "Alberto_Santos-Dumont",
-		Language:  "fr",
-		Link:      "https://fr.wikipedia.org/wiki/Alberto_Santos-Dumont",
-		ShortText: "",
-	}
-
-	docsMap["soprano_fr"] = Document{
-		Title:     "Mezzo-soprano",
-		Language:  "fr",
-		Link:      "https://fr.wikipedia.org/wiki/Mezzo-soprano",
-		ShortText: "",
-	}
-
-
-	docsMap["futurama_en"] = Document{
-		Title:     "Futurama",
-		Language:  "en",
-		Link:      "https://en.wikipedia.org/wiki/Futurama",
-		ShortText: "",
-	}
-
-	docsMap["jonny_quest_en"] = Document{
-		Title:     "Jonny_Quest",
-		Language:  "en",
-		Link:      "https://en.wikipedia.org/wiki/Jonny_Quest",
-		ShortText: "",
-	}
-
-	docsMap["twisted_sister_en"] = Document{
-		Title:     "Twisted_Sister",
-		Language:  "en",
-		Link:      "https://en.wikipedia.org/wiki/Twisted_Sister",
-		ShortText: "",
-	}
-
-	docsMap["new_york_en"] = Document{
-		Title:     "New_York_City",
-		Language:  "en",
-		Link:      "https://en.wikipedia.org/wiki/New_York_City",
-		ShortText: "",
-	}
-
-	docsMap["Buffalo_Oklahoma_en"] = Document{
-		Title:     "Buffalo,_Oklahoma",
-		Language:  "en",
-		Link:      "https://en.wikipedia.org/wiki/Buffalo,_Oklahoma",
-		ShortText: "",
-	}
-
+	addStopWords()
 	for id, _ := range docsMap {
 		prepareDoc(id)
 	}
+
+	docsLen = float64(len(docsMap))
 }
 
 func main() {
@@ -128,10 +77,333 @@ func prepareDoc(id string)  {
 	var words []string
 
 	for _, token := range tokens {
-		words = append(words, token.Text)
+		clearWord := clearWord(token.Text)
+		if clearWord != "" {
+			words = append(words, clearWord)
+		}
 	}
 
-	document.Sentences = sents
+	var sentences []Sentence
+	for _, sent := range sents {
+		sentences = append(sentences, Sentence{
+			Sentence: sent,
+		})
+	}
+
+	document.Sentences = sentences
 	document.Words = words
 	docsMap[id] = document
+}
+
+func clearWord(word string) string {
+	word = strings.ToLower(word)
+
+	word = strings.Replace(word, ".", "", -1)
+	word = strings.Replace(word, ",", "", -1)
+	word = strings.Replace(word, "!", "", -1)
+	word = strings.Replace(word, "?", "", -1)
+	word = strings.Replace(word, "(", "", -1)
+	word = strings.Replace(word, ")", "", -1)
+	word = strings.Replace(word, ";", "", -1)
+	word = strings.Replace(word, ":", "", -1)
+	word = strings.Replace(word, "«", "", -1)
+	word = strings.Replace(word, "»", "", -1)
+	word = strings.Replace(word, "...", "", -1)
+	word = strings.Replace(word, "----", "", -1)
+	word = strings.Replace(word, "+", "", -1)
+	word = strings.Replace(word, "=", " ", -1)
+	word = strings.Replace(word, "≠", "", -1)
+	word = strings.Replace(word, "#", "", -1)
+	word = strings.Replace(word, "\"", "", -1)
+	word = strings.Replace(word, "--", "", -1)
+	word = strings.Replace(word, "—", "", -1)
+	word = strings.Replace(word, "‘", "", -1)
+	word = strings.Replace(word, "’", "", -1)
+	word = strings.Replace(word, "'", "", -1)
+
+	word = strings.Replace(word, " ", "", -1)
+
+	re := regexp.MustCompile(`[0-9]`)
+	word = re.ReplaceAllString(word, "")
+
+
+	return word
+}
+
+func addStopWords() {
+	stopWords = []string{
+		"а",
+		"б",
+		"в",
+		"г",
+		"д",
+		"е",
+		"ё",
+		"ж",
+		"з",
+		"и",
+		"й",
+		"к",
+		"л",
+		"м",
+		"н",
+		"о",
+		"п",
+		"р",
+		"с",
+		"т",
+		"у",
+		"ф",
+		"х",
+		"ц",
+		"ч",
+		"ш",
+		"щ",
+		"ъ",
+		"ы",
+		"ь",
+		"э",
+		"ю",
+		"я",
+		"будем",
+		"будет",
+		"будешь",
+		"будете",
+		"буду",
+		"будут",
+		"будучи",
+		"будь",
+		"будьте",
+		"бы",
+		"был",
+		"была",
+		"были",
+		"было",
+		"быть",
+		"вам",
+		"вас",
+		"вами",
+		"весь",
+		"во",
+		"вот",
+		"все",
+		"всё",
+		"всего",
+		"всей",
+		"всем",
+		"всём",
+		"всеми",
+		"всему",
+		"всех",
+		"всею",
+		"всея",
+		"всю",
+		"вся",
+		"вы",
+		"да",
+		"для",
+		"до",
+		"его",
+		"едим",
+		"едят",
+		"ее",
+		"её",
+		"ей",
+		"ел",
+		"ела",
+		"ем",
+		"ему",
+		"если",
+		"ест",
+		"есть",
+		"ешь",
+		"еще",
+		"ещё",
+		"ею",
+		"же",
+		"за",
+		"из",
+		"или",
+		"им",
+		"ими",
+		"их",
+		"как",
+		"кем",
+		"ко",
+		"когда",
+		"кому",
+		"которая",
+		"которого",
+		"которое",
+		"который",
+		"котором",
+		"которому",
+		"которою",
+		"которые",
+		"которой",
+		"которым",
+		"которых",
+		"кто",
+		"меня",
+		"мне",
+		"мной",
+		"мною",
+		"мог",
+		"могла",
+		"могли",
+		"могло",
+		"могу",
+		"могут",
+		"мое",
+		"моё",
+		"моего",
+		"моей",
+		"моем",
+		"моём",
+		"моему",
+		"моею",
+		"можем",
+		"может",
+		"можете",
+		"можешь",
+		"мои",
+		"мой",
+		"моим",
+		"моими",
+		"моих",
+		"мочь",
+		"мою",
+		"моя",
+		"мы",
+		"на",
+		"нам",
+		"нами",
+		"нас",
+		"наш",
+		"наша",
+		"наше",
+		"нашей",
+		"нашего",
+		"нашем",
+		"нашему",
+		"наши",
+		"нашим",
+		"нашими",
+		"наших",
+		"нашу",
+		"не",
+		"него",
+		"нее",
+		"неё",
+		"ней",
+		"нем",
+		"нём",
+		"нему",
+		"нет",
+		"нею",
+		"ним",
+		"ними",
+		"них",
+		"но",
+		"об",
+		"один",
+		"одна",
+		"одни",
+		"одним",
+		"одними",
+		"одних",
+		"одно",
+		"одного",
+		"одной",
+		"одном",
+		"одному",
+		"одною",
+		"одну",
+		"он",
+		"она",
+		"они",
+		"оно",
+		"от",
+		"по",
+		"при",
+		"сам",
+		"сама",
+		"сами",
+		"самим",
+		"самими",
+		"самих",
+		"само",
+		"самого",
+		"самом",
+		"самому",
+		"саму",
+		"свое",
+		"своё",
+		"своего",
+		"своей",
+		"своем",
+		"своём",
+		"своему",
+		"своею",
+		"свои",
+		"свой",
+		"своим",
+		"своими",
+		"своих",
+		"свою",
+		"своя",
+		"себе",
+		"себя",
+		"собой",
+		"собою",
+		"так",
+		"такая",
+		"такие",
+		"таким",
+		"такими",
+		"таких",
+		"такого",
+		"такое",
+		"такой",
+		"таком",
+		"такому",
+		"такою",
+		"такую",
+		"те",
+		"тебе",
+		"тебя",
+		"тем",
+		"теми",
+		"тех",
+		"то",
+		"тобой",
+		"тобою",
+		"того",
+		"той",
+		"только",
+		"том",
+		"тому",
+		"тот",
+		"ту",
+		"ты",
+		"уже",
+		"чего",
+		"чем",
+		"чём",
+		"чему",
+		"что",
+		"чтобы",
+		"эта",
+		"эти",
+		"этим",
+		"этими",
+		"этих",
+		"это",
+		"этого",
+		"этой",
+		"этом",
+		"этому",
+		"этот",
+		"эту",
+	}
 }

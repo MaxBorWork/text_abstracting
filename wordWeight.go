@@ -1,11 +1,46 @@
 package main
 
-import "math"
+import (
+	"math"
+	"regexp"
+	"sort"
+)
 
-func calcDocWeights(document Document)  {
+func calcDocWeights(document Document) []kv {
+	var ss []kv
 	for _, word := range document.Words {
-		calculateWordWeight(word, document)
+		if wordCorrect(word) {
+			ss = append(ss, kv{word, calculateWordWeight(word, document)})
+		}
 	}
+
+	sort.Slice(ss, func(i, j int) bool {
+		return ss[i].Value > ss[j].Value
+	})
+
+	return ss
+}
+
+func wordCorrect(word string) bool {
+	for _, stopWord := range stopWords {
+		if stopWord == word {
+			return false
+		}
+	}
+
+	pattern := `[a-zA-Z+]`
+	matched, _ := regexp.Match(pattern, []byte(word))
+	if matched {
+		return false
+	}
+
+	pattern = `\d+`
+	matched, _ = regexp.Match(pattern, []byte(word))
+	if matched {
+		return false
+	}
+
+	return true
 }
 
 func calculateWordWeight(word string, document Document) float64 {

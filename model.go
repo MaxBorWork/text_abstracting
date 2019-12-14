@@ -8,16 +8,25 @@ type (
 		Link      string
 		Language  string
 		ShortText string
-		Sentences    []prose.Sentence
+		Sentences    []Sentence
 		Words  []string
-		WordWeights map[string]float32
 		KeyWords []string
+		WordWeightsStruct []kv
+	}
+
+	Sentence struct {
+		Sentence prose.Sentence
+		Weight float64
 	}
 
 	ClassicAbstraction struct {
 		Title     string
 		Link      string
-		Sentences    []prose.Sentence
+		Sentences    []Sentence
 	}
 
+	kv struct {
+		Key   string
+		Value float64
+	}
 )

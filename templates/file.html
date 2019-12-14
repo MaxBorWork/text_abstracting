@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Result page</title>
+    <style>
+        .header {
+            margin-left: 33.33333%;
+            width: 33.33333%;
+            text-align: center;
+        }
+
+        .header ul {
+            display: -webkit-box;
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .header ul li {
+            margin: 40px 0;
+        }
+
+        .header ul li {
+            margin: 20px 40px;
+        }
+
+        .header ul li a {
+            text-decoration: none;
+            color: black;
+            font-size: 24px;
+        }
+
+        .header ul li a:hover {
+            text-decoration: none;
+            color: black;
+        }
+
+        .result .title {
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .result .title a {
+            color: black;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .result .title a:hover {
+            color: black;
+            text-decoration: none;
+        }
+
+        .text {
+            width: 80%;
+            margin-left: 10%;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <ul>
+            <li><a href="/result" target="_blank">Result</a></li>
+            <li class="active"><a href="#" target="_blank">File</a></li>
+            <li><a href="{{ .Link }}" target="_blank">Wiki</a></li>
+{{/*            <li><a href="/save" class="save-bnt">Save</a></li>*/}}
+        </ul>
+    </div>
+    <div class="result">
+        <p class="title">Фрагмента текста <a href="{{ .Link }}" target="_blank">{{ .Title }}</a>
+        <br />
+        <p class="text">{{ .Text }}</p>
+    </div>
+
+</body>
+</html>
