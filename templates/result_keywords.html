@@ -82,43 +82,13 @@
         </ul>
     </div>
     <div class="result">
-        <p>Для документа <a href="{{ .Link }}" target="_blank">{{ .Title }}</a> определен язык {{ .Language }}</p>
+        <p>Реферат в виде списка ключевых слов для документа <a href="{{ .Link }}" target="_blank">{{ .Title }}</a></p>
 
-        <table class="results-table">
-            <thead>
-            <tr>
-                <td>Название</td>
-                <td>Язык</td>
-                <td>Метрика</td>
-            </tr>
-            </thead>
-            <tbody>
-            {{range .ResultsArr }}
-                <tr>
-                    <td>{{ .TestDocTitle }}</td>
-                    <td>{{ .TestDocLanguage }}</td>
-                    <td>{{ .Ratio }}</td>
-                </tr>
+        <ul class="results-table">
+            {{range .KeyWords }}
+                <li>{{ .Word }}</li>
             {{ end }}
-            </tbody>
-        </table>
-
-        <table>
-            <thead>
-            <tr>
-                <td>Имя</td>
-            </tr>
-            </thead>
-            <tbody>
-            {{range .Alphabet }}
-            <tr>
-                <td>{{ .Name }}</td>
-            </tr>
-            {{ end }}
-            </tbody>
-        </table>
-
-
+        </ul>
     </div>
 </body>
 </html>

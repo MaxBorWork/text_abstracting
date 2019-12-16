@@ -10,7 +10,7 @@ type (
 		ShortText string
 		Sentences    []Sentence
 		Words  []string
-		KeyWords []string
+		KeyWords []KeyWord
 		WordWeightsStruct []kv
 	}
 
@@ -19,14 +19,18 @@ type (
 		Weight float64
 	}
 
-	ClassicAbstraction struct {
-		Title     string
-		Link      string
-		Sentences    []Sentence
-	}
-
 	kv struct {
 		Key   string
 		Value float64
+	}
+
+	OstisReponse struct {
+		Sys []interface{} `json:"sys"`
+		Main []interface{} `json:"main"`
+		Common []interface{} `json:"common"`
+	}
+
+	KeyWord struct {
+		Word string
 	}
 )

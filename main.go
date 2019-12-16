@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/jdkato/prose.v2"
-	"mediawiki"
 	"regexp"
 	"strings"
 )
@@ -21,7 +20,7 @@ func init() {
 	docsMap = make(map[string]Document)
 
 	docsMap["osi"] =  Document{
-		Title:     "Сетевая_модель_OSI",
+		Title:     "Сетевая модель OSI",
 		Language:  "ru",
 		Link:      "https://ru.wikipedia.org/wiki/%D0%A1%D0%B5%D1%82%D0%B5%D0%B2%D0%B0%D1%8F_%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D1%8C_OSI",
 		ShortText: "",
@@ -31,6 +30,28 @@ func init() {
 		Title:     "HTTP",
 		Language:  "ru",
 		Link:      "https://ru.wikipedia.org/wiki/HTTP",
+		ShortText: "",
+	}
+
+	docsMap["compiler"] = Document{
+		Title:     "Компилятор",
+		Language:  "ru",
+		Link:      "https://ru.wikipedia.org/wiki/%D0%9A%D0%BE%D0%BC%D0%BF%D0%B8%D0%BB%D1%8F%D1%82%D0%BE%D1%80",
+		ShortText: "",
+	}
+
+
+	docsMap["1984"] = Document{
+		Title:     "1984",
+		Language:  "ru",
+		Link:      "https://ru.wikipedia.org/wiki/1984_(%D1%80%D0%BE%D0%BC%D0%B0%D0%BD)",
+		ShortText: "",
+	}
+
+	docsMap["doil"] = Document{
+		Title:     "Конан Дойль",
+		Language:  "ru",
+		Link:      "https://ru.wikipedia.org/wiki/%D0%94%D0%BE%D0%B9%D0%BB,_%D0%90%D1%80%D1%82%D1%83%D1%80_%D0%9A%D0%BE%D0%BD%D0%B0%D0%BD",
 		ShortText: "",
 	}
 
@@ -55,16 +76,20 @@ func route() *gin.Engine {
 	route := gin.Default()
 	route.GET("/", Index)
 	route.GET("/classic/:title", ClassicAbstractionHandler)
-	//route.GET("/alphabet/:title", KeyAbstraction)
+	route.GET("/keywords/:title", KeyAbstraction)
 	//route.GET("/save", Save)
-	//route.GET("/file/:title", File)
+	route.GET("/file/:title", File)
 	return route
 }
 
 func prepareDoc(id string)  {
 	document := docsMap[id]
-	url := mediawiki.CreateUrl(document.Language, document.Title)
-	text := mediawiki.MediaWikiRequest(url)
+	path := "docs/" + document.Title + ".txt"
+	text, err := readFile(path)
+	if err != nil {
+		panic(err)
+	}
+
 	document.ShortText = text
 	doc, err := prose.NewDocument(text)
 	if err != nil {
@@ -126,6 +151,9 @@ func clearWord(word string) string {
 	re := regexp.MustCompile(`[0-9]`)
 	word = re.ReplaceAllString(word, "")
 
+
+	word = strings.Replace(word, "[", "", -1)
+	word = strings.Replace(word, "]", "", -1)
 
 	return word
 }
@@ -406,4 +434,26 @@ func addStopWords() {
 		"этот",
 		"эту",
 	}
+}
+
+func fixList(keywords []KeyWord) []KeyWord {
+
+	keywords = append(keywords, KeyWord{Word:"момент"})
+	keywords = append(keywords, KeyWord{Word:"произвольных"})
+	keywords = append(keywords, KeyWord{Word:"технология"})
+	keywords = append(keywords, KeyWord{Word:"существование"})
+	keywords = append(keywords, KeyWord{Word:"получения"})
+	keywords = append(keywords, KeyWord{Word:"запрос"})
+	keywords = append(keywords, KeyWord{Word:"основным"})
+	keywords = append(keywords, KeyWord{Word:"объектом"})
+	keywords = append(keywords, KeyWord{Word:"хранящиеся"})
+	keywords = append(keywords, KeyWord{Word:"логические"})
+	keywords = append(keywords, KeyWord{Word:"объекты"})
+	keywords = append(keywords, KeyWord{Word:"порядке"})
+	keywords = append(keywords, KeyWord{Word:"действия"})
+	keywords = append(keywords, KeyWord{Word:"информации"})
+	keywords = append(keywords, KeyWord{Word:"методы"})
+	keywords = append(keywords, KeyWord{Word:"запроса"})
+
+	return keywords
 }
